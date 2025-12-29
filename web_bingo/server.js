@@ -50,6 +50,15 @@ io.on('connection', (socket) => {
         gameState = { calledNumbers: [], lastNumber: null };
         io.emit('game-reset');
     });
+
+    // Retransmisión de Anuncios (Línea/Bingo)
+    socket.on('show-announcement', (data) => {
+        socket.broadcast.emit('show-announcement', data);
+    });
+
+    socket.on('hide-announcement', () => {
+        socket.broadcast.emit('hide-announcement');
+    });
 });
 
 const PORT = process.env.PORT || 3000;

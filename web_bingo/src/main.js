@@ -38,10 +38,51 @@ class BingoEngine {
     this.drawBtn = document.getElementById('drawBtn');
     this.resetBtn = document.getElementById('resetBtn');
     this.volumeSlider = document.getElementById('volumeSlider');
+    this.announcementOverlay = document.getElementById('announcementOverlay');
+    this.announcementTitle = document.getElementById('announcementTitle');
+    this.announcementStatus = document.getElementById('announcementStatus');
 
     this.init();
     this.setupSockets();
     this.checkVideoStatus();
+
+    if (this.isAdmin) {
+      this.setupKeyboardShortcuts();
+    }
+  }
+
+  setupKeyboardShortcuts() {
+    window.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === 'l') {
+        this.broadcastAnnouncement('REVISANDO LÍNEA...', 'LÍNEA CORRECTA');
+      } else if (e.key.toLowerCase() === 'b') {
+        this.broadcastAnnouncement('REVISANDO BINGO...', '¡BINGO CORRECTO!');
+      } else if (e.key === 'Escape') {
+        this.closeAnnouncement();
+      }
+    });
+  }
+
+  broadcastAnnouncement(title, status) {
+    socket.emit('show-announcement', { title, status });
+    this.showAnnouncementUI(title, status);
+  }
+
+  showAnnouncementUI(title, status) {
+    this.announcementOverlay.classList.add('active');
+    this.announcementTitle.innerText = title;
+    this.announcementStatus.innerText = "...";
+    this.announcementStatus.classList.remove('status-valid');
+
+    setTimeout(() => {
+      this.announcementStatus.innerText = status;
+      this.announcementStatus.classList.add('status-valid');
+    }, 2000);
+  }
+
+  closeAnnouncement() {
+    socket.emit('hide-announcement');
+    this.announcementOverlay.classList.remove('active');
   }
 
   checkVideoStatus() {
@@ -62,6 +103,14 @@ class BingoEngine {
       if (!this.isAdmin) {
         this.markNumber(number, false);
       }
+    });
+
+    socket.on('show-announcement', (data) => {
+      this.showAnnouncementUI(data.title, data.status);
+    });
+
+    socket.on('hide-announcement', () => {
+      this.announcementOverlay.classList.remove('active');
     });
 
     socket.on('game-reset', () => {

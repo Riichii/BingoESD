@@ -41,6 +41,9 @@ class BingoEngine {
     this.announcementOverlay = document.getElementById('announcementOverlay');
     this.announcementTitle = document.getElementById('announcementTitle');
     this.announcementStatus = document.getElementById('announcementStatus');
+    this.announcementAmount = document.getElementById('announcementAmount');
+    this.linePrize = "0€";
+    this.bingoPrize = "0€";
 
     this.init();
     this.setupSockets();
@@ -54,30 +57,25 @@ class BingoEngine {
   setupKeyboardShortcuts() {
     window.addEventListener('keydown', (e) => {
       if (e.key.toLowerCase() === 'l') {
-        this.broadcastAnnouncement('REVISANDO LÍNEA...', 'LÍNEA CORRECTA');
+        this.broadcastAnnouncement('¡TENEMOS LÍNEA!', 'LÍNEA CORRECTA', this.linePrize);
       } else if (e.key.toLowerCase() === 'b') {
-        this.broadcastAnnouncement('REVISANDO BINGO...', '¡BINGO CORRECTO!');
+        this.broadcastAnnouncement('¡TENEMOS BINGO!', 'BINGO CORRECTO', this.bingoPrize);
       } else if (e.key === 'Escape') {
         this.closeAnnouncement();
       }
     });
   }
 
-  broadcastAnnouncement(title, status) {
-    socket.emit('show-announcement', { title, status });
-    this.showAnnouncementUI(title, status);
+  broadcastAnnouncement(title, status, amount) {
+    socket.emit('show-announcement', { title, status, amount });
+    this.showAnnouncementUI(title, status, amount);
   }
 
-  showAnnouncementUI(title, status) {
+  showAnnouncementUI(title, status, amount) {
     this.announcementOverlay.classList.add('active');
     this.announcementTitle.innerText = title;
-    this.announcementStatus.innerText = "...";
-    this.announcementStatus.classList.remove('status-valid');
-
-    setTimeout(() => {
-      this.announcementStatus.innerText = status;
-      this.announcementStatus.classList.add('status-valid');
-    }, 2000);
+    this.announcementStatus.innerText = status;
+    this.announcementAmount.innerText = amount || "---";
   }
 
   closeAnnouncement() {
@@ -97,6 +95,13 @@ class BingoEngine {
     socket.on('init-state', (state) => {
       state.calledNumbers.forEach(n => this.markNumber(n, false));
       if (state.lastNumber) this.updateLastNumberUI(state.lastNumber);
+      this.linePrize = state.linePrize || "0€";
+      this.bingoPrize = state.bingoPrize || "0€";
+    });
+
+    socket.on('update-prizes', (data) => {
+      this.linePrize = data.line;
+      this.bingoPrize = data.bingo;
     });
 
     socket.on('number-drawn', (number) => {
@@ -106,7 +111,7 @@ class BingoEngine {
     });
 
     socket.on('show-announcement', (data) => {
-      this.showAnnouncementUI(data.title, data.status);
+      this.showAnnouncementUI(data.title, data.status, data.amount);
     });
 
     socket.on('hide-announcement', () => {
@@ -246,6 +251,17 @@ class BingoEngine {
   resetGame() {
     if (!this.isAdmin) return;
     if (!confirm('¿Reiniciar todo el juego?')) return;
+
+    // Pedir premios para la nueva partida
+    const linea = prompt("Introduce el premio para la LÍNEA (ej: 150€):", "150€");
+    const bingo = prompt("Introduce el premio para el BINGO (ej: 500€):", "500€");
+
+    if (linea && bingo) {
+      this.linePrize = linea;
+      this.bingoPrize = bingo;
+      socket.emit('set-prizes', { line: linea, bingo: bingo });
+    }
+
     this.resetUI();
     socket.emit('reset-game');
   }

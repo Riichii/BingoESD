@@ -426,71 +426,103 @@ body.is-guest .bingo-cell {
   pointer-events: none;
 }
 
-/* MODAL DE ANUNCIOS PREMIUM */
+/* MODAL DE ANUNCIOS PREMIUM MEJORADO */
 .announcement-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(20px);
+  background: radial-gradient(circle, rgba(15, 23, 42, 0.9) 0%, rgba(2, 6, 23, 0.98) 100%);
+  backdrop-filter: blur(15px);
   z-index: 9999;
   display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  animation: modalFadeIn 0.3s ease-out;
+  overflow: hidden;
 }
 
 .announcement-overlay.active {
   display: flex;
 }
 
+.announcement-overlay::after {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, transparent, var(--accent), transparent);
+  animation: rotateGlow 4s linear infinite;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
 .announcement-title {
   font-family: 'Montserrat', sans-serif;
   font-weight: 950;
-  font-size: 8vh;
-  color: var(--accent);
+  font-size: 10vh;
+  color: white;
   text-transform: uppercase;
-  letter-spacing: 15px;
-  text-shadow: 0 0 30px rgba(245, 158, 11, 0.5);
-  margin-bottom: 20px;
+  letter-spacing: 5px;
   text-align: center;
+  margin: 0;
+  animation: prizeEntrance 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
 }
 
 .announcement-status {
   font-family: 'Outfit', sans-serif;
-  font-size: 15vh;
+  font-size: 6vh;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 10px;
+  margin-top: 2vh;
+  text-transform: uppercase;
+  animation: prizeEntrance 0.6s 0.2s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.announcement-amount {
+  font-size: 14vh;
   font-weight: 950;
-  color: white;
-  text-shadow: 0 0 50px rgba(255, 255, 255, 0.3);
-  animation: textPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.status-valid {
   color: var(--success);
-  text-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+  text-shadow: 0 0 50px rgba(16, 185, 129, 0.6);
+  margin-top: 4vh;
+  animation: prizeEntrance 0.6s 0.4s cubic-bezier(0.23, 1, 0.32, 1) both,
+    glowPulse 2s infinite ease-in-out;
 }
 
-@keyframes modalFadeIn {
+@keyframes prizeEntrance {
   from {
+    transform: translateY(50px) scale(0.8);
     opacity: 0;
   }
 
   to {
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
 }
 
-@keyframes textPop {
-  0% {
-    transform: scale(0.5);
-    opacity: 0;
+@keyframes glowPulse {
+
+  0%,
+  100% {
+    text-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+    transform: scale(1);
   }
 
-  100% {
-    transform: scale(1);
-    opacity: 1;
+  50% {
+    text-shadow: 0 0 70px rgba(16, 185, 129, 0.8);
+    transform: scale(1.05);
+  }
+}
+
+@keyframes rotateGlow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }

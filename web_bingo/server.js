@@ -31,12 +31,20 @@ const io = new Server(server, {
 
 let gameState = {
     calledNumbers: [],
-    lastNumber: null
+    lastNumber: null,
+    linePrize: "0€",
+    bingoPrize: "0€"
 };
 
 io.on('connection', (socket) => {
     // Reducimos logs para no saturar la consola con 1000 personas
     socket.emit('init-state', gameState);
+
+    socket.on('set-prizes', (data) => {
+        gameState.linePrize = data.line;
+        gameState.bingoPrize = data.bingo;
+        socket.broadcast.emit('update-prizes', data);
+    });
 
     socket.on('draw-number', (number) => {
         if (!gameState.calledNumbers.includes(number)) {

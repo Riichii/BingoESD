@@ -6,6 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BINGO ESD</title>
   <link rel="icon" type="image/x-icon" href="/assets/bingoesd.ico">
+  <!-- Meta tags para pantalla completa en móviles -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0f172a">
 </head>
 
 <body>
@@ -55,6 +60,7 @@
             <div class="volume-label">VOLUMEN</div>
             <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
           </div>
+          <button class="btn-fullscreen" id="fullscreenBtn">PANTALLA COMPLETA</button>
         </div>
       </div>
     </div>
@@ -64,6 +70,18 @@
       <div class="announcement-title" id="announcementTitle">¡PREMIO!</div>
       <div class="announcement-status" id="announcementStatus">LÍNEA CORRECTA</div>
       <div class="announcement-amount" id="announcementAmount">150€</div>
+    </div>
+
+    <!-- Pantalla de Código QR -->
+    <div id="qrOverlay" class="qr-overlay">
+      <div class="qr-container">
+        <h2 class="qr-title">ESCANEA PARA ENTRAR</h2>
+        <div class="qr-frame">
+          <img id="qrImage" src="" alt="Código QR">
+        </div>
+        <p class="qr-subtitle">Escanéalo con tu móvil para ver los números</p>
+        <p class="qr-url" id="qrUrlLabel"></p>
+      </div>
     </div>
   </div>
   <script type="module" src="/src/main.js"></script>

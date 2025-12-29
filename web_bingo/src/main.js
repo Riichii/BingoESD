@@ -38,12 +38,17 @@ class BingoEngine {
     this.drawBtn = document.getElementById('drawBtn');
     this.resetBtn = document.getElementById('resetBtn');
     this.volumeSlider = document.getElementById('volumeSlider');
+    this.fullscreenBtn = document.getElementById('fullscreenBtn');
     this.announcementOverlay = document.getElementById('announcementOverlay');
     this.announcementTitle = document.getElementById('announcementTitle');
     this.announcementStatus = document.getElementById('announcementStatus');
     this.announcementAmount = document.getElementById('announcementAmount');
+    this.qrOverlay = document.getElementById('qrOverlay');
+    this.qrImage = document.getElementById('qrImage');
+    this.qrUrlLabel = document.getElementById('qrUrlLabel');
     this.linePrize = "0€";
     this.bingoPrize = "0€";
+
 
     this.init();
     this.setupSockets();
@@ -60,10 +65,35 @@ class BingoEngine {
         this.broadcastAnnouncement('¡TENEMOS LÍNEA!', 'LÍNEA CORRECTA', this.linePrize);
       } else if (e.key.toLowerCase() === 'b') {
         this.broadcastAnnouncement('¡TENEMOS BINGO!', 'BINGO CORRECTO', this.bingoPrize);
+      } else if (e.key.toLowerCase() === 'q') {
+        this.toggleQRCode();
       } else if (e.key === 'Escape') {
         this.closeAnnouncement();
+        this.closeQRCode();
       }
     });
+  }
+
+  toggleQRCode() {
+    if (this.qrOverlay.classList.contains('active')) {
+      this.closeQRCode();
+    } else {
+      this.showQRCode();
+    }
+  }
+
+  showQRCode() {
+    // Obtenemos la URL base sin parámetros de búsqueda (?admin=1)
+    const url = window.location.origin + window.location.pathname;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
+
+    this.qrImage.src = qrUrl;
+    this.qrUrlLabel.innerText = url;
+    this.qrOverlay.classList.add('active');
+  }
+
+  closeQRCode() {
+    this.qrOverlay.classList.remove('active');
   }
 
   broadcastAnnouncement(title, status, amount) {
@@ -139,6 +169,24 @@ class BingoEngine {
         this.volume = parseFloat(e.target.value);
         this.audio.volume = this.volume;
       };
+    }
+
+    if (this.fullscreenBtn) {
+      this.fullscreenBtn.onclick = () => this.toggleFullscreen();
+    }
+  }
+
+  toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Error al intentar activar pantalla completa: ${err.message}`);
+      });
+      if (this.fullscreenBtn) this.fullscreenBtn.innerText = "SALIR PANTALLA COMPLETA";
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+        if (this.fullscreenBtn) this.fullscreenBtn.innerText = "PANTALLA COMPLETA";
+      }
     }
   }
 

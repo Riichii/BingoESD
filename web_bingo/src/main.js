@@ -253,8 +253,8 @@ class BingoEngine {
     if (!confirm('¿Reiniciar todo el juego?')) return;
 
     // Pedir premios para la nueva partida
-    const linea = prompt("Introduce el premio para la LÍNEA (ej: 150€):", "150€");
-    const bingo = prompt("Introduce el premio para el BINGO (ej: 500€):", "500€");
+    const linea = prompt("Introduce el premio para la LÍNEA (ej: 150€):", " ");
+    const bingo = prompt("Introduce el premio para el BINGO (ej: 500€):", " ");
 
     if (linea && bingo) {
       this.linePrize = linea;

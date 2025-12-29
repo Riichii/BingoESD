@@ -450,11 +450,24 @@ body.is-guest .bingo-cell {
 .announcement-overlay::after {
   content: "";
   position: absolute;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(from 0deg, transparent, var(--accent), transparent);
-  animation: rotateGlow 4s linear infinite;
-  opacity: 0.1;
+  top: 50%;
+  left: 50%;
+  width: 150vmax;
+  /* Cubre toda la pantalla incluso al rotar */
+  height: 150vmax;
+  background: conic-gradient(from 0deg,
+      transparent 0%,
+      rgba(245, 158, 11, 0.2) 15%,
+      transparent 30%,
+      transparent 50%,
+      rgba(245, 158, 11, 0.2) 65%,
+      transparent 80%,
+      transparent 100%);
+  transform: translate(-50%, -50%) rotate(0deg);
+  animation: rotateGlow 10s linear infinite;
+  filter: blur(120px);
+  /* Suavizado masivo para eliminar cortes */
+  opacity: 0.4;
   pointer-events: none;
 }
 

@@ -45,9 +45,18 @@ class BingoEngine {
     this.announcementAmount = document.getElementById('announcementAmount');
     this.qrOverlay = document.getElementById('qrOverlay');
     this.qrImage = document.getElementById('qrImage');
-    this.qrUrlLabel = document.getElementById('qrUrlLabel');
+    this.logoImg = document.querySelector('.logo-container img');
     this.linePrize = "0€";
     this.bingoPrize = "0€";
+
+    // Configuración de Propaganda / Carrusel de Logos
+    this.ads = [
+      '/assets/logo.png',
+      '/assets/titan.png',
+      // '/assets/propaganda2.png',
+    ];
+    this.currentAdIndex = 0;
+    this.adInterval = 60000; // Cambia cada 10 segundos
 
 
     this.init();
@@ -83,12 +92,10 @@ class BingoEngine {
   }
 
   showQRCode() {
-    // Obtenemos la URL base sin parámetros de búsqueda (?admin=1)
     const url = window.location.origin + window.location.pathname;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
 
     this.qrImage.src = qrUrl;
-    this.qrUrlLabel.innerText = url;
     this.qrOverlay.classList.add('active');
   }
 
@@ -174,6 +181,25 @@ class BingoEngine {
     if (this.fullscreenBtn) {
       this.fullscreenBtn.onclick = () => this.toggleFullscreen();
     }
+
+    this.startAdRotation();
+  }
+
+  startAdRotation() {
+    if (this.ads.length <= 1) return;
+
+    setInterval(() => {
+      this.currentAdIndex = (this.currentAdIndex + 1) % this.ads.length;
+
+      // Animación suave de cambio
+      if (this.logoImg) {
+        this.logoImg.style.opacity = '0';
+        setTimeout(() => {
+          this.logoImg.src = this.ads[this.currentAdIndex];
+          this.logoImg.style.opacity = '1';
+        }, 500);
+      }
+    }, this.adInterval);
   }
 
   toggleFullscreen() {

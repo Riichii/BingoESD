@@ -156,6 +156,8 @@ body::before {
   max-height: 10vh;
   width: auto;
   filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
+  transition: opacity 0.5s ease-in-out;
+  opacity: 1;
 }
 
 .last-number-display {
@@ -272,25 +274,6 @@ body::before {
 
 .btn-fullscreen {
   display: none;
-  /* Oculto en escritorio */
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid var(--glass-border);
-  padding: 1.2vh;
-  border-radius: 1vh;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 700;
-  font-size: 1.4vh;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
-  margin-top: 1vh;
-}
-
-.btn-fullscreen:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
 }
 
 
@@ -318,7 +301,7 @@ input[type=range]::-webkit-slider-thumb {
 }
 
 /* =============================================
-   OPTIMIZACIÓN MÓVIL (VERTICAL PERMANENTE)
+   OPTIMIZACIÓN MÓVIL
    ============================================= */
 @media (max-width: 900px) {
   .main-container {
@@ -326,26 +309,17 @@ input[type=range]::-webkit-slider-thumb {
     overflow-y: auto;
     overflow-x: hidden;
     height: auto;
-    /* Permitimos que el contenido dicte la altura */
     min-height: 100vh;
-    padding: 12px;
-    gap: 12px;
-    /* Espaciado uniforme */
+    padding: 15px;
+    gap: 12px !important;
+    /* Espacio uniforme entre todas las piezas */
     align-items: center;
+    justify-content: flex-start !important;
   }
 
   .info-card {
-    padding: 12px !important;
-    /* Reducimos padding interno en móviles */
-    gap: 8px;
-  }
-
-  .btn-fullscreen {
-    display: block;
-    /* Solo visible en móviles */
-    margin-top: 0;
-    padding: 15px;
-    font-size: 1.6vh;
+    padding: 2vh !important;
+    gap: 1.5vh;
   }
 
   .side-panel {
@@ -353,76 +327,122 @@ input[type=range]::-webkit-slider-thumb {
   }
 
   .last-number-display {
-    order: 1;
-    font-size: 5.5rem;
+    order: 2;
+    /* Bajamos el número al segundo puesto */
+    font-size: 5rem;
+    /* Reducimos un poco el tamaño para ganar espacio */
+    margin-top: 0 !important;
     height: auto;
-    min-height: 100px;
-    padding-top: 30px;
+    min-height: 80px;
+    /* Reducimos altura mínima */
+    padding-top: 20px !important;
     flex: none;
     width: 100%;
   }
 
   .last-number-display::before {
-    font-size: 1rem;
-    letter-spacing: 6px;
-    top: 10px;
+    font-size: 0.9rem;
+    letter-spacing: 4px;
+    top: 0.8vh;
     color: var(--accent);
     font-weight: 950;
     text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
   }
 
   .info-card:has(.history-container) {
-    order: 2;
-    padding: 12px;
+    order: 3;
+    /* Historial al tercer puesto */
+    margin-top: 0 !important;
+    padding: 1vh !important;
+    /* Más compacto todavía */
     width: 100%;
   }
 
   .volume-label {
     font-size: 1rem;
     letter-spacing: 4px;
-    margin-bottom: 4px;
   }
 
   .history-item {
-    font-size: 1.4rem !important;
+    font-size: 1.2rem !important;
+    /* Números del historial un pelín más pequeños */
     aspect-ratio: 1;
   }
 
   .board-container {
-    order: 3;
+    order: 4;
+    /* Tablero al cuarto puesto */
     width: 100% !important;
     max-width: 100vw !important;
+    margin-top: 0 !important;
     height: auto;
-    padding: 6px;
-    gap: 3px;
+    padding: 4px;
+    /* Padding mínimo */
+    gap: 2px;
     flex: none;
   }
 
   .bingo-cell {
-    font-size: 4.2vw;
-    height: 36px;
+    font-size: 4vw;
+    height: 32px;
+    /* Celdas más bajas para ahorrar mucha altura */
     font-weight: 950;
   }
 
   .controls {
-    order: 4;
+    order: 5;
+    /* Controles al quinto puesto */
     width: 100%;
-    background: none;
-    border: none;
+    background: none !important;
+    backdrop-filter: none !important;
+    border: none !important;
     padding: 0 !important;
+    box-shadow: none !important;
+    display: flex;
+    flex-direction: column;
+    flex: none !important;
+    /* Evita que crezca y cree el hueco gigante */
+    gap: 0;
+  }
+
+  .btn-fullscreen {
+    display: block;
+    margin-top: 0 !important;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--glass-border);
+    padding: 1.5vh;
+    border-radius: 12px;
+    color: white;
+    font-weight: 950;
+    font-size: 1.6vh;
+    width: 100%;
+    backdrop-filter: blur(10px);
+    margin-bottom: 1vh !important;
   }
 
   .logo-container {
-    order: 5;
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    padding: 12px;
+    order: 1;
+    /* El logo arriba de todo */
+    margin-top: 0 !important;
+    background: var(--glass) !important;
+    /* Restauramos el contenedor transparente */
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid var(--glass-border) !important;
+    padding: 8px !important;
     border-radius: 16px;
     width: 100%;
+    height: 7vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
   }
 
   .logo-container img {
-    max-height: 6vh;
+    height: 80%;
+    /* Un 80% para que respire dentro del contenedor */
+    width: auto;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
   }
 }
 
@@ -459,17 +479,10 @@ input[type=range]::-webkit-slider-thumb {
   }
 }
 
+/* REGLAS PARA INVITADOS (GUESTS) */
 body.is-guest .controls>*:not(#fullscreenBtn),
 body.is-guest .volume-control {
   display: none !important;
-}
-
-body.is-guest .controls {
-  order: 4;
-  width: 100%;
-  background: none;
-  border: none;
-  padding: 0;
 }
 
 body.is-guest .bingo-cell {

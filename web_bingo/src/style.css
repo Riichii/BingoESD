@@ -62,7 +62,7 @@ body::before {
 }
 
 /* =============================================
-   DISEÑO PREMIUM ESCRITORIO (RESTAURADO)
+   ESCRITORIO 
    ============================================= */
 .main-container {
   display: flex;
@@ -605,7 +605,7 @@ body.is-guest .bingo-cell {
 }
 
 /* =============================================
-   OVERLAY CÓDIGO QR (PREMIUM)
+   OVERLAY CÓDIGO QR
    ============================================= */
 .qr-overlay {
   position: fixed;

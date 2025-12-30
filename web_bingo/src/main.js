@@ -71,9 +71,9 @@ class BingoEngine {
   setupKeyboardShortcuts() {
     window.addEventListener('keydown', (e) => {
       if (e.key.toLowerCase() === 'l') {
-        this.broadcastAnnouncement('¡TENEMOS LÍNEA!', 'LÍNEA CORRECTA', this.linePrize);
+        this.broadcastAnnouncement('¡TENEMOS LÍNEA!', 'PREMIO:', this.linePrize);
       } else if (e.key.toLowerCase() === 'b') {
-        this.broadcastAnnouncement('¡TENEMOS BINGO!', 'BINGO CORRECTO', this.bingoPrize);
+        this.broadcastAnnouncement('¡TENEMOS BINGO!', 'PREMIO:', this.bingoPrize);
       } else if (e.key.toLowerCase() === 'q') {
         this.toggleQRCode();
       } else if (e.key === 'Escape') {

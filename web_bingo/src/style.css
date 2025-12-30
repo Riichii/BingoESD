@@ -440,9 +440,25 @@ input[type=range]::-webkit-slider-thumb {
 
   .logo-container img {
     height: 80%;
-    /* Un 80% para que respire dentro del contenedor */
     width: auto;
     filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+  }
+
+  /* Ajuste de Carteles Línea/Bingo para Móvil */
+  .announcement-title {
+    font-size: 8vw !important;
+    letter-spacing: 2px !important;
+    padding: 0 15px;
+  }
+
+  .announcement-status {
+    font-size: 5vw !important;
+    letter-spacing: 4px !important;
+  }
+
+  .announcement-amount {
+    font-size: 15vw !important;
+    margin-top: 2vh !important;
   }
 }
 

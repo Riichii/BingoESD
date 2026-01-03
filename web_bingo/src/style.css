@@ -74,6 +74,7 @@ body::before {
   box-sizing: border-box;
   animation: fadeIn 1s ease-out;
   align-items: stretch;
+  overflow: hidden; /* Mantener fijo si es posible, pero el contenido debe ajustarse */
 }
 
 /* Tablero Izquierda Estilo PC */
@@ -101,7 +102,7 @@ body::before {
   justify-content: center;
   font-family: 'Montserrat', sans-serif;
   font-weight: 950;
-  font-size: clamp(14px, 4.5vh, 60px);
+  font-size: clamp(14px, 4vh, 50px); /* Reducido de 4.5vh a 4vh y max 50px */
   color: rgba(255, 255, 255, 0.3);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -126,10 +127,25 @@ body::before {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.2vh;
+  gap: 1vh;
   height: 100%;
-  min-width: 380px;
+  min-width: 350px; /* Reducido de 380px */
+  max-width: 450px;
   justify-content: space-between;
+  overflow-y: auto; /* Permitir scroll si la pantalla es muy bajita */
+  padding-right: 5px; /* Espacio para el scrollbar si aparece */
+}
+
+/* Scrollbar personalizado para el panel lateral */
+.side-panel::-webkit-scrollbar {
+  width: 6px;
+}
+.side-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+.side-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
 }
 
 .info-card {
@@ -137,11 +153,12 @@ body::before {
   backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
   border-radius: 1.5vh;
-  padding: 1.8vh;
+  padding: 1.5vh; /* Reducido de 1.8vh */
   display: flex;
   flex-direction: column;
   justify-content: center;
   width: 100%;
+  flex-shrink: 0; /* No dejar que las tarjetas se deformen */
 }
 
 .logo-container {
@@ -161,16 +178,17 @@ body::before {
 }
 
 .last-number-display {
-  flex: 3.5;
+  flex: 3; /* Reducido de 3.5 */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26vh;
+  font-size: 22vh; /* Reducido de 26vh */
   font-family: 'Montserrat', sans-serif;
   font-weight: 950;
   text-shadow: 0 0 50px rgba(255, 255, 255, 0.4);
   position: relative;
-  padding-top: 4vh;
+  padding-top: 3vh; /* Reducido de 4vh */
+  min-height: 150px;
 }
 
 .last-number-display::before {
@@ -220,12 +238,13 @@ body::before {
 }
 
 .controls {
-  flex: 1.2;
+  flex: 1; /* Reducido de 1.2 */
   display: flex;
   flex-direction: column;
-  gap: 1vh;
+  gap: 0.8vh; /* Reducido de 1vh */
   justify-content: center;
   align-items: stretch;
+  min-height: fit-content;
 }
 
 .btn-primary {

@@ -1,5 +1,6 @@
 import './style.css'
 import { io } from "socket.io-client";
+import confetti from 'canvas-confetti';
 
 const urlParams = new URLSearchParams(window.location.search);
 const secretQuery = urlParams.get('admin');
@@ -119,6 +120,31 @@ class BingoEngine {
     this.announcementTitle.innerText = title;
     this.announcementStatus.innerText = status;
     this.announcementAmount.innerText = amount || "---";
+    this.fireConfetti();
+  }
+
+  fireConfetti() {
+    const duration = 4000; // 4 segundos de fuegos artificiales
+    const end = Date.now() + duration;
+
+    (function frame() {
+      // Disparar desde el borde izquierdo
+      confetti({
+        particleCount: 5, angle: 60, spread: 55, origin: { x: 0, y: 0.8 },
+        colors: ['#f59e0b', '#10b981', '#3b82f6', '#ffffff'],
+        zIndex: 10000 // Para que se vea por encima de todo
+      });
+      // Disparar desde el borde derecho
+      confetti({
+        particleCount: 5, angle: 120, spread: 55, origin: { x: 1, y: 0.8 },
+        colors: ['#f59e0b', '#10b981', '#3b82f6', '#ffffff'],
+        zIndex: 10000
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    }());
   }
 
   closeAnnouncement() {
@@ -145,6 +171,17 @@ class BingoEngine {
 
   setupSockets() {
     socket.on('init-state', (state) => {
+      // SALVAVIDAS ANTI-CAÍDAS: Si el servidor está en blanco (se acaba de reiniciar) pero tú eres ADMIN y ya tienes números...
+      if (this.isAdmin && state.calledNumbers.length === 0 && this.calledNumbers.length > 0) {
+        socket.emit('restore-state', {
+          calledNumbers: this.calledNumbers,
+          lastNumber: this.calledNumbers.length > 0 ? this.calledNumbers[this.calledNumbers.length - 1] : null,
+          linePrize: this.linePrize,
+          bingoPrize: this.bingoPrize
+        });
+        return; // Abortar reemplazo local porque nuestros datos mandan
+      }
+
       state.calledNumbers.forEach(n => this.markNumber(n, false));
       if (state.lastNumber) this.updateLastNumberUI(state.lastNumber);
       this.linePrize = state.linePrize || "0€";

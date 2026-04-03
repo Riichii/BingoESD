@@ -82,6 +82,16 @@ io.on('connection', (socket) => {
         io.emit('game-reset');
     });
 
+    // Protección Anti-Caídas: Permite al Admin restaurar la memoria del servidor si este se reinicia
+    socket.on('restore-state', (data) => {
+        if (!isSocketAdmin) return;
+        gameState.calledNumbers = data.calledNumbers || [];
+        gameState.lastNumber = data.lastNumber;
+        gameState.linePrize = data.linePrize;
+        gameState.bingoPrize = data.bingoPrize;
+        socket.broadcast.emit('init-state', gameState); // Empuja el estado restaurado a todos los teléfonos invitados
+    });
+
     // Retransmisión de Anuncios (Línea/Bingo)
     socket.on('show-announcement', (data) => {
         if (!isSocketAdmin) return;

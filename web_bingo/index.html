@@ -11,13 +11,14 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0f172a">
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
 </head>
 
 <body>
   <div id="app">
-    <!-- Fondo de Video Dinámico -->
-    <video autoplay muted loop playsinline webkit-playsinline class="video-bg" id="bgVideo">
-      <source src="/assets/fondo.mp4" type="video/mp4">
+    <!-- Fondo de Video Dinámico optimizado -->
+    <video autoplay muted loop playsinline webkit-playsinline class="video-bg" id="bgVideo" data-src="/assets/fondo.mp4">
     </video>
 
     <div class="main-container">

@@ -36,17 +36,24 @@ let gameState = {
     bingoPrize: "0€"
 };
 
+const ADMIN_TOKEN = "Fiesta26";
+
 io.on('connection', (socket) => {
+    // Verificamos si la conexión viene validada como Admin
+    const isSocketAdmin = socket.handshake.auth.token === ADMIN_TOKEN;
+
     // Reducimos logs para no saturar la consola con 1000 personas
     socket.emit('init-state', gameState);
 
     socket.on('set-prizes', (data) => {
+        if (!isSocketAdmin) return;
         gameState.linePrize = data.line;
         gameState.bingoPrize = data.bingo;
         socket.broadcast.emit('update-prizes', data);
     });
 
     socket.on('draw-number', (number) => {
+        if (!isSocketAdmin) return;
         if (!gameState.calledNumbers.includes(number)) {
             gameState.calledNumbers.push(number);
             gameState.lastNumber = number;
@@ -54,17 +61,35 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('unmark-number', (number) => {
+        if (!isSocketAdmin) return;
+        // Permitir que el admin desmarque números si se equivoca
+        gameState.calledNumbers = gameState.calledNumbers.filter(n => n !== number);
+        
+        // Si el último número fue desmarcado, actualizamos al anterior si existe
+        if (gameState.lastNumber === number) {
+             gameState.lastNumber = gameState.calledNumbers.length > 0 
+                ? gameState.calledNumbers[gameState.calledNumbers.length - 1] 
+                : null;
+        }
+        io.emit('number-unmarked', number);
+    });
+
     socket.on('reset-game', () => {
-        gameState = { calledNumbers: [], lastNumber: null };
+        if (!isSocketAdmin) return;
+        gameState.calledNumbers = [];
+        gameState.lastNumber = null;
         io.emit('game-reset');
     });
 
     // Retransmisión de Anuncios (Línea/Bingo)
     socket.on('show-announcement', (data) => {
+        if (!isSocketAdmin) return;
         socket.broadcast.emit('show-announcement', data);
     });
 
     socket.on('hide-announcement', () => {
+        if (!isSocketAdmin) return;
         socket.broadcast.emit('hide-announcement');
     });
 });

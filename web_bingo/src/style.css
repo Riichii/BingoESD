@@ -67,14 +67,14 @@ body::before {
 .main-container {
   display: flex;
   width: 100%;
-  height: 100vh;
+  height: 100dvh; /* Better dynamic viewport handling */
   padding: 1.5vh;
   gap: 1.5vh;
   justify-content: flex-start;
   box-sizing: border-box;
   animation: fadeIn 1s ease-out;
   align-items: stretch;
-  overflow: hidden; /* Mantener fijo si es posible, pero el contenido debe ajustarse */
+  overflow: hidden; 
 }
 
 /* Tablero Izquierda Estilo PC */
@@ -129,10 +129,11 @@ body::before {
   flex-direction: column;
   gap: 1vh;
   height: 100%;
-  min-width: 350px; /* Reducido de 380px */
+  min-width: 280px; /* Reducido para mejor soporte en tablets pequeñas/portátiles */
   max-width: 450px;
   justify-content: space-between;
   overflow-y: auto; /* Permitir scroll si la pantalla es muy bajita */
+  overflow-x: hidden; /* Cortar cualquier scrollbar horizontal residual */
   padding-right: 5px; /* Espacio para el scrollbar si aparece */
 }
 
@@ -171,6 +172,8 @@ body::before {
 
 .logo-container img {
   max-height: 10vh;
+  max-width: 100%; /* Evita que crezca más del contenedor en grandes pantallas */
+  object-fit: contain; /* Mantiene la proporción sin deformarse */
   width: auto;
   filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
   transition: opacity 0.5s ease-in-out;
@@ -178,17 +181,17 @@ body::before {
 }
 
 .last-number-display {
-  flex: 3; /* Reducido de 3.5 */
+  flex: 3;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22vh; /* Reducido de 26vh */
+  font-size: clamp(80px, 18vh, 25vh); /* Sizing fluido que no se desborda */
   font-family: 'Montserrat', sans-serif;
   font-weight: 950;
   text-shadow: 0 0 50px rgba(255, 255, 255, 0.4);
   position: relative;
-  padding-top: 3vh; /* Reducido de 4vh */
-  min-height: 150px;
+  padding-top: 3vh; 
+  min-height: 15vh; /* Flexible min-height en vez de px fijos */
 }
 
 .last-number-display::before {
@@ -233,7 +236,7 @@ body::before {
   justify-content: center;
   font-family: 'Montserrat', sans-serif;
   font-weight: 950;
-  font-size: 4vh;
+  font-size: clamp(16px, 4vh, 4vw); /* Adapta tamaño entre altura y anchura */
   border: 1px solid var(--glass-border);
 }
 
@@ -328,17 +331,16 @@ input[type=range]::-webkit-slider-thumb {
     overflow-y: auto;
     overflow-x: hidden;
     height: auto;
-    min-height: 100vh;
-    padding: 15px;
-    gap: 12px !important;
-    /* Espacio uniforme entre todas las piezas */
+    min-height: 100dvh;
+    padding: clamp(10px, 3vw, 20px);
+    gap: clamp(10px, 2vw, 15px) !important;
     align-items: center;
     justify-content: flex-start !important;
   }
 
   .info-card {
-    padding: 2vh !important;
-    gap: 1.5vh;
+    padding: clamp(12px, 3vw, 20px) !important;
+    gap: clamp(8px, 1.5vw, 15px);
   }
 
   .side-panel {
@@ -390,21 +392,19 @@ input[type=range]::-webkit-slider-thumb {
 
   .board-container {
     order: 4;
-    /* Tablero al cuarto puesto */
     width: 100% !important;
     max-width: 100vw !important;
     margin-top: 0 !important;
-    height: auto;
-    padding: 4px;
-    /* Padding mínimo */
-    gap: 2px;
+    height: auto !important;
+    padding: clamp(5px, 1.5vw, 10px) !important;
+    gap: clamp(2px, 0.8vw, 6px) !important;
     flex: none;
   }
 
   .bingo-cell {
-    font-size: 4vw;
-    height: 32px;
-    /* Celdas más bajas para ahorrar mucha altura */
+    font-size: clamp(14px, 4vw, 28px);
+    height: auto !important; 
+    aspect-ratio: 1; /* Aspecto siempre cuadrado perfecto */
     font-weight: 950;
   }
 
@@ -518,6 +518,13 @@ input[type=range]::-webkit-slider-thumb {
 body.is-guest .controls>*:not(#fullscreenBtn),
 body.is-guest .volume-control {
   display: none !important;
+}
+
+/* Ocultar la tarjeta vacía entera en PC para invitados */
+@media (min-width: 901px) {
+  body.is-guest .controls {
+    display: none !important;
+  }
 }
 
 body.is-guest .bingo-cell {

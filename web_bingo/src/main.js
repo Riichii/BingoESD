@@ -2,12 +2,18 @@ import './style.css'
 import { io } from "socket.io-client";
 
 const urlParams = new URLSearchParams(window.location.search);
-const isAdmin = urlParams.get('admin') === '1' ||
-  window.location.hostname === 'localhost' ||
-  window.location.hostname === '127.0.0.1';
+const secretQuery = urlParams.get('admin');
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-// Conexión al servidor de sincronización (Automática por host)
-const socket = io();
+// Protección de seguridad con Token
+const isAdmin = secretQuery === 'Fiesta26' || isLocal;
+
+// Conexión al servidor con credenciales
+const socket = io({
+  auth: {
+    token: isAdmin ? 'Fiesta26' : null
+  }
+});
 
 if (!isAdmin) {
   document.body.classList.add('is-guest');
@@ -123,8 +129,17 @@ class BingoEngine {
   checkVideoStatus() {
     const video = document.getElementById('bgVideo');
     if (video) {
-      video.play().catch(e => console.warn("Autoplay bloqueado o fallo de video:", e));
-      video.onerror = () => console.error("Error al cargar el video de fondo:", video.error);
+      if (this.isAdmin || window.innerWidth > 900) {
+        const src = video.getAttribute('data-src');
+        if (src) {
+           video.innerHTML = `<source src="${src}" type="video/mp4">`;
+           video.load();
+           video.play().catch(e => console.warn("Autoplay bloqueado:", e));
+           video.onerror = () => console.error("Error al cargar video");
+        }
+      } else {
+        video.remove(); // Evita por completo solicitar el video en móviles ahorrando Gigabytes de datos
+      }
     }
   }
 
@@ -144,6 +159,12 @@ class BingoEngine {
     socket.on('number-drawn', (number) => {
       if (!this.isAdmin) {
         this.markNumber(number, false);
+      }
+    });
+
+    socket.on('number-unmarked', (number) => {
+      if (!this.isAdmin) {
+        this.unmarkNumberLocally(number);
       }
     });
 
@@ -259,20 +280,33 @@ class BingoEngine {
 
   toggleNumber(n) {
     if (this.calledNumbers.includes(n)) {
-      this.calledNumbers = this.calledNumbers.filter(num => num !== n);
-      if (this.buttons[n]) this.buttons[n].classList.remove('marked');
-
-      this.audioQueue = this.audioQueue.filter(item => item !== n);
-      if (this.currentPlayingNumber === n) {
-        this.audio.pause();
-        this.isPlaying = false;
-        this.processAudioQueue();
-      }
-      this.updateHistoryUI();
+      this.unmarkNumberLocally(n);
+      socket.emit('unmark-number', n);
     } else {
       this.markNumber(n, true);
       socket.emit('draw-number', n);
     }
+  }
+
+  unmarkNumberLocally(n) {
+    if (!this.calledNumbers.includes(n)) return;
+    
+    this.calledNumbers = this.calledNumbers.filter(num => num !== n);
+    if (this.buttons[n]) this.buttons[n].classList.remove('marked');
+
+    this.audioQueue = this.audioQueue.filter(item => item !== n);
+    if (this.currentPlayingNumber === n) {
+      this.audio.pause();
+      this.isPlaying = false;
+      this.processAudioQueue();
+    }
+    
+    // Si desmarcamos el último número, actualizamos el UI
+    const anterior = this.calledNumbers.length > 0 
+      ? this.calledNumbers[this.calledNumbers.length - 1] 
+      : '-';
+    this.updateLastNumberUI(anterior);
+    this.updateHistoryUI();
   }
 
   updateLastNumberUI(n) {
